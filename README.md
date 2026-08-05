@@ -1,135 +1,151 @@
-### Step0 How to Start This Exercise
+# GitHub Agentic Workflows Workshop
 
-- Please don't fork or don't clone this repository, instead  "Use This Template" button on the right side of this repository :   
+In this workshop, you will create your own copy of this repository, open it in
+GitHub Codespaces, and add a pre-built GitHub Agentic Workflow.
 
-<p align="center">
-	<img src="images/create-from-template-repo.png" width="90%" alt="GitHub repository page with the Use this template menu highlighted">
-	<br>
-	<sub><strong>Step 1:</strong> Select <strong>Use this template</strong>, then <strong>Create a new repository</strong>.</sub>
-</p>
+## 1. Create Your Workshop Repository
 
-- For **Owner** select the organization name provided to you by instructor. Give a specific, unique name to your repository so it'll be easier for you to find if needed : ) 
+Do not fork or clone this repository. Create a new repository from the template
+so you have an independent copy.
 
-<p align="center">
-	<img src="images/create-from-template-repo2.png" width="65%" alt="GitHub new repository form with owner, repository name, and Create repository highlighted">
-	<br>
-	<sub><strong>Step 2:</strong> Choose an owner, enter a unique repository name, and create the repository.</sub>
-</p>
+1. Select **Use this template**, then **Create a new repository**.
 
-- Cross-check if "Allow all actions and reusable workflows" is enabled in your repository from Settings => Actions => General
+   <p align="center">
+      <img src="images/create-from-template-repo.png" width="85%" alt="GitHub repository page with the Use this template menu highlighted">
+   </p>
 
-<p align="center">
-	<img src="images/actions-enable1.png" width="90%" alt="GitHub Actions permissions page with Settings, Actions, General, and Allow all actions and reusable workflows highlighted">
-	<br>
-	<sub><strong>Step 3:</strong> Confirm that <strong>Allow all actions and reusable workflows</strong> is selected.</sub>
-</p>
+2. For **Owner**, select the organization provided by your instructor. Enter a
+   unique repository name, then select **Create repository**.
 
-- Scroll down in settings page and "Allow GitHub Actions to create and approve pull requests"
+   <p align="center">
+      <img src="images/create-from-template-repo2.png" width="70%" alt="GitHub new repository form with the owner, repository name, and Create repository button highlighted">
+   </p>
 
-<p align="center">
-	<img src="images/actions-enable2.png" width="70%" alt="GitHub Actions workflow permissions section with Allow GitHub Actions to create and approve pull requests checked">
-	<br>
-	<sub><strong>Step 4:</strong> Enable <strong>Allow GitHub Actions to create and approve pull requests</strong>, then click <strong>Save</strong>.</sub>
-</p>
+3. In your new repository, open **Settings → Actions → General** and confirm:
+   - **Allow all actions and reusable workflows** is selected.
+   - **Allow GitHub Actions to create and approve pull requests** is selected.
 
+   Select **Save** if you changed either setting.
 
-# Step1  Setup Your Environment
+   <p align="center">
+      <img src="images/actions-enable1.png" width="85%" alt="GitHub Actions permissions set to allow all actions and reusable workflows">
+   </p>
 
-### Highly Recommended: Please use the pre-configured Github Codespace for today's workshop.
+   <p align="center">
+      <img src="images/actions-enable2.png" width="75%" alt="Workflow permissions allowing GitHub Actions to create and approve pull requests">
+   </p>
 
+## 2. Open Your Repository in GitHub Codespaces
 
-1. Right click the button below to open the **Create Codespace** page in a new tab.
+1. Open the Codespaces creation page:
 
-   [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/mburakunuvar/skills-agentic-workflows-that-read-the-room?quickstart=1)
+   <p align="center">
+      <a href="https://codespaces.new"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
+   </p>
 
+2. In the **Repository** field, select the repository you created in the
+   previous section. Keep the default settings and select **Create codespace**.
 
-   No need to change options, we'll use the default configuration.
+3. Wait for Visual Studio Code to finish loading. Initial setup may take a few
+   minutes while the development container installs its dependencies.
 
-2. Confirm the **Repository** field is your copy of the exercise, not the original template, then click the green **Create Codespace** button.
-   - ✅ Your copy: `/your-org/skills-agentic-workflows-that-read-the-room`
-   - ❌ Original: `/EmileVerbunt/AgenticWorkflows`
+### Explore the Project
 
-3. Wait for Visual Studio Code to load in your browser. The codespace setup may take a few minutes while it installs dependencies. 
+- In Copilot Chat, try:
 
-4. Get familiar with the project by 
+  > Briefly explain #codespace
 
-```bash
-briefly explain #codespace 
+  <p align="center">
+     <img src="images/briefly-explain.png" width="75%" alt="GitHub Copilot Chat explaining the Codespace">
+  </p>
 
-```
+- To preview the sample application, right-click `index.html` and select
+  **Open with Live Server**.
 
+  <p align="center">
+     <img src="images/preview.png" width="70%" alt="Preview of the sample web application">
+  </p>
 
-# Step2  QuickStart with a pre-defined GitHub Agentic Workflows.
+The sample application uses HTML, but GitHub Agentic Workflows can run in
+projects built with any language, framework, or runtime.
 
-In this guide you will add an existing, pre-baked workflow to an existing GitHub repository where you are a maintainer 
+## 3. Add Your First GitHub Agentic Workflow
 
-[the automated Daily Repo Status Report](https://github.com/githubnext/agentics/blob/main/workflows/daily-repo-status.md?plain=1) is just one of many useful workflows that you can quickly implement to your repository.
- 
- 
+You will add the
+[Daily Repo Status Report](https://github.com/githubnext/agentics/blob/main/workflows/daily-repo-status.md?plain=1),
+a pre-built workflow from the GitHub Agentics repository.
 
-### Install GitHub Agentic Workflows and Configure Codespaces
+### Install and Initialize `gh-aw`
+
+Run these commands in the Codespace terminal:
 
 ```bash
 gh extension install github/gh-aw
-gh aw init --codespaces
+unset GH_TOKEN GITHUB_TOKEN
+gh auth login --web --scopes workflow
+gh aw init
 ```
 
-The initialization command prepares your repository for agentic workflows and
-updates your copy of `.devcontainer/devcontainer.json` with your repository name
-and the permissions required to run GitHub Actions workflows.
+Complete the browser sign-in when prompted, then return to the same terminal.
+The `unset` command ensures that GitHub CLI uses your browser-authenticated
+session instead of the restricted token provided by Codespaces.
 
-Commit and push this repository-specific configuration before rebuilding:
+> [!NOTE]
+> If you open a new terminal, run `unset GH_TOKEN GITHUB_TOKEN` again before
+> using `gh` or `gh aw`. You do not need to sign in again.
+
+Commit and push the generated configuration:
 
 ```bash
 git add .
-git commit -m "configure Codespaces for gh-aw"
+git commit -m "initialize GitHub Agentic Workflows"
 git push origin main
 ```
 
-1. Press `Ctrl+Shift+P` and select **Codespaces: Rebuild Container**.
-2. Approve the requested repository permissions. Do not continue without
-	authorizing them.
-3. Wait for the Codespace to reconnect.
-
-After the rebuild, verify that GitHub Agentic Workflows is available:
+Confirm that `gh-aw` is available:
 
 ```bash
 gh aw --version
 ```
 
+### Add the Daily Repo Status Workflow
 
-### Add Your First Workflow from GitHub Agentics
+Start the setup wizard:
 
 ```bash
-$ gh aw add-wizard githubnext/agentics/daily-repo-status
+gh aw add-wizard githubnext/agentics/daily-repo-status
 ```
+
+Use the following selections:
 
 <table>
-	<tr>
-		<td width="50%" align="center">
-			<a href="images/daily-p1.png"><img src="images/daily-p1.png" width="100%" alt="Select GitHub Copilot CLI as the coding agent"></a>
-			<br><sub><strong>1. Select GitHub Copilot CLI</strong></sub>
-		</td>
-		<td width="50%" align="center">
-			<a href="images/daily-p2.png"><img src="images/daily-p2.png" width="100%" alt="Select Copilot requests for authentication"></a>
-			<br><sub><strong>2. Choose Copilot requests</strong></sub>
-		</td>
-	</tr>
-	<tr>
-		<td width="50%" align="center">
-			<a href="images/daily-p3.png"><img src="images/daily-p3.png" width="100%" alt="Choose the daily workflow schedule"></a>
-			<br><sub><strong>3. Keep the daily schedule</strong></sub>
-		</td>
-		<td width="50%" align="center">
-			<a href="images/daily-p5.png"><img src="images/daily-p5.png" width="100%" alt="Choose to merge the generated pull request"></a>
-			<br><sub><strong>4. Merge the generated pull request</strong></sub>
-		</td>
-	</tr>
+   <tr>
+      <td width="50%" align="center">
+         <a href="images/daily-p1.png"><img src="images/daily-p1.png" width="100%" alt="Select GitHub Copilot CLI as the coding agent"></a>
+         <br><sub><strong>1. Select GitHub Copilot CLI</strong></sub>
+      </td>
+      <td width="50%" align="center">
+         <a href="images/daily-p2.png"><img src="images/daily-p2.png" width="100%" alt="Select Copilot requests for authentication"></a>
+         <br><sub><strong>2. Choose Copilot requests</strong></sub>
+      </td>
+   </tr>
+   <tr>
+      <td width="50%" align="center">
+         <a href="images/daily-p3.png"><img src="images/daily-p3.png" width="100%" alt="Choose the daily workflow schedule"></a>
+         <br><sub><strong>3. Keep the daily schedule</strong></sub>
+      </td>
+      <td width="50%" align="center">
+         <a href="images/daily-p5.png"><img src="images/daily-p5.png" width="100%" alt="Choose to merge the generated pull request"></a>
+         <br><sub><strong>4. Merge the generated pull request</strong></sub>
+      </td>
+   </tr>
 </table>
 
-```bash 
-$ gh aw status 
-$ git pull
-$ git aw status 
+After the wizard merges the pull request, update your Codespace and run the
+workflow:
+
+```bash
+git pull
+gh aw status
+gh aw run
 ```
- 
