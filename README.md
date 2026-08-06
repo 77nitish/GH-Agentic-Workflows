@@ -4,14 +4,14 @@ Build and run secure, AI-powered automations with GitHub Agentic Workflows
 (`gh-aw`). You will install a pre-built workflow, create two workflows from
 natural-language prompts, and review their results through pull requests.
 
-## What You Will Build
+## What are we going to automate today ? 
 
 | Part | Outcome |
 | --- | --- |
-| Repository setup | An independent workshop repository running in Codespaces |
-| Daily repo status | A scheduled workflow that creates a repository status issue |
-| New day update | A workflow that proposes a dated website update |
-| Daily FAQ update | A workflow that proposes one new FAQ per UTC day |
+| Environment Setup | Create Repository and Configure Codespaces|
+| Daily repo status | A pre-built workflow that runs on schedule |
+| New day update | A custom workflow that updates the web app |
+| Daily FAQ update | Another custom workflow that fetches content and adds data |
 | Optional review | A `/grumpy` pull request review workflow |
 
 > [!IMPORTANT]
@@ -53,13 +53,7 @@ your work is isolated from other students.
    Select **Save** if you changed either setting. If an organization policy
    prevents a change, contact your instructor.
 
-   <p align="center">
-      <img src="images/actions-enable1.png" width="85%" alt="GitHub Actions permissions set to allow all actions and reusable workflows">
-   </p>
 
-   <p align="center">
-      <img src="images/actions-enable2.png" width="75%" alt="Workflow permissions allowing GitHub Actions to create and approve pull requests">
-   </p>
 
 ## 2. Open the Repository in GitHub Codespaces
 
@@ -165,13 +159,13 @@ gh aw add-wizard githubnext/agentics/daily-repo-status
 
 Use these selections when prompted:
 
-| Prompt | Selection |
-| --- | --- |
-| Coding agent | **GitHub Copilot CLI** |
-| Authentication | **Copilot requests** |
-| Schedule | **Daily** |
-| Create a setup pull request, if offered | **Yes** |
-| Setup pull request action | **Attempt to merge** |
+| # | Prompt | Selection |
+| :--: | --- | --- |
+| 1 | Coding agent | **GitHub Copilot CLI** |
+| 2 | Authentication | **Copilot requests** |
+| 3 | Schedule | **Daily** |
+| 4 | Create a setup pull request, if offered | **Yes** |
+| 5 | Setup pull request action | **Attempt to merge** |
 
 Selecting **Copilot requests** makes the wizard add
 `copilot-requests: write` to the workflow automatically. No PAT or
@@ -413,3 +407,7 @@ and add one of these comments:
 - [`gh-aw` CLI reference](https://github.github.com/gh-aw/setup/cli/)
 - [Workflow permissions](https://github.github.com/gh-aw/reference/permissions/)
 - [Safe outputs](https://github.github.com/gh-aw/reference/safe-outputs/)
+
+## Appendix
+
+For personal-repository setup instructions, see the [Appendix](appendix.md).
