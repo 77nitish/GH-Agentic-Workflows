@@ -6,25 +6,19 @@ natural-language prompts, and review their results through pull requests.
 
 ## What are we going to automate today ? 
 
-| Part | Outcome |
-| --- | --- |
-| Environment Setup | Create Repository and Configure Codespaces|
-| Daily repo status | A pre-built workflow that runs on schedule |
-| New day update | A custom workflow that updates the web app |
-| Daily FAQ update | Another custom workflow that fetches content and adds data |
-| Optional review | A `/grumpy` pull request review workflow |
+| # | Part | Outcome |
+| :--: | --- | --- |
+| 1 | Environment Setup | Create Repository and Configure Codespaces|
+| 2 | Daily repo status | A pre-built workflow that runs on schedule |
+| 3 | New day update | A custom workflow that updates the web app |
+| 4 | Daily FAQ update | Another custom workflow that fetches content and adds data |
+| 5 | Optional review | A `/grumpy` pull request review workflow |
 
 > [!IMPORTANT]
 > This workshop uses your organization's **Copilot requests** billing. If that
 > option is unavailable or reported as disabled, stop and contact your
 > instructor instead of creating a Personal Access Token (PAT).
 
-> [!NOTE]
-> Agentic workflow Markdown files (`.md`) are the source of truth. Their
-> `.lock.yml` files are generated GitHub Actions workflows. Never edit a
-> `.lock.yml` file manually; run
-> `gh aw compile .github/workflows/FILENAME.md` after changing its Markdown
-> source, then commit both files.
 
 ## 1. Create Your Workshop Repository
 
@@ -105,6 +99,8 @@ Run the following commands in the Codespace terminal:
 
 ```bash
 gh extension install github/gh-aw
+gh aw version 
+#  should be something like v0.85.4
 unset GH_TOKEN GITHUB_TOKEN
 gh auth login --web --scopes repo,workflow
 gh auth status
@@ -126,13 +122,9 @@ During `gh auth login`:
 | **5** | Browser | Select **Authorize GitHub CLI**. |
 | **6** | Terminal | Wait for the successful authentication message. |
 
-The `unset` command makes GitHub CLI use your browser-authenticated session
-instead of the restricted token injected by Codespaces. In every new terminal,
-run this command again before using `gh` or `gh aw`:
-
-```bash
-unset GH_TOKEN GITHUB_TOKEN
-```
+> [!NOTE]
+> The `unset` command makes GitHub CLI use your browser-authenticated > session instead of the restricted token injected by Codespaces. In > every new terminal,
+> run this command again before using `gh` or `gh aw`:
 
 Initialize Agentic Workflows, then commit the generated repository
 configuration:
@@ -142,6 +134,14 @@ gh aw init
 git add .
 git commit -m "initialize GitHub Agentic Workflows"
 git push origin main
+```
+
+> [!STATUS UPDATE---SO FAR SO GOOD!]
+> This push triggers the **Part 2 readiness** workflow. Wait for
+> it to finish in the repository's **Actions** tab, then update your Codespace:
+
+```bash
+git pull --ff-only origin main
 ```
 
 > [!TIP]
@@ -265,53 +265,14 @@ the **Issues** tab and find the new issue whose title starts with
    Complete this step before creating the next workflow so both workflows start
    from the same version of `index.html`.
 
-### What Is a Safe Output?
-
-A safe output is a controlled GitHub write operation declared under
-`safe-outputs:`. The agent remains read-only and requests a narrowly configured
-operation that a separate, permission-controlled job validates and performs.
-
-| Safe output | What it can do | Example use |
-| --- | --- | --- |
-| `create-issue` | Open a new issue | Report a test-quality gap |
-| `add-comment` | Comment on an issue or pull request | Review changed tests |
-| `create-pull-request` | Propose file changes in a pull request | Update stale documentation |
-| `add-labels` | Add allowed labels | Triage incoming issues |
-
 > [!NOTE]
-> `noop` is always available. Use it when the workflow succeeds but finds
-> nothing useful to change.
+> Agentic workflow Markdown files (`.md`) are the source of truth. Their
+> `.lock.yml` files are generated GitHub Actions workflows. Never edit a
+> `.lock.yml` file manually; run
+> `gh aw compile .github/workflows/FILENAME.md` after changing its Markdown
+> source, then commit both files.
 
-#### Configuration Examples
 
-**Create an issue:**
-
-```yaml
-safe-outputs:
-   create-issue:
-      title-prefix: "[quality] "
-      max: 1
-```
-
-**Add a comment:**
-
-```yaml
-safe-outputs:
-   add-comment:
-      max: 1
-      hide-older-comments: true
-```
-
-**Create a pull request:**
-
-```yaml
-safe-outputs:
-   create-pull-request:
-      draft: true
-      allowed-files:
-         - "**/*.md"
-      max: 1
-```
 
 ## 6. Create another Custom Workflow Highlights
 
@@ -360,6 +321,57 @@ safe-outputs:
 4. Follow the run in the **Actions** tab, then review and merge its pull
    request. A later run on the same UTC day should not create a duplicate
    update.
+
+
+> [!NOTE]
+> ### What Is a Safe Output?
+>
+> A safe output is a controlled GitHub write operation declared under
+> `safe-outputs:`. The agent remains read-only and requests a narrowly configured
+> operation that a separate, permission-controlled job validates and performs.
+>
+> | Safe output | What it can do | Example use |
+> | --- | --- | --- |
+> | `create-issue` | Open a new issue | Report a test-quality gap |
+> | `add-comment` | Comment on an issue or pull request | Review changed tests |
+> | `create-pull-request` | Propose file changes in a pull request | Update stale documentation |
+> | `add-labels` | Add allowed labels | Triage incoming issues |
+>
+> `noop` is always available. Use it when the workflow succeeds but finds
+> nothing useful to change.
+>
+> #### Configuration Examples
+>
+> **Create an issue:**
+>
+> ```yaml
+> safe-outputs:
+>    create-issue:
+>       title-prefix: "[quality] "
+>       max: 1
+> ```
+>
+> **Add a comment:**
+>
+> ```yaml
+> safe-outputs:
+>    add-comment:
+>       max: 1
+>       hide-older-comments: true
+> ```
+>
+> **Create a pull request:**
+>
+> ```yaml
+> safe-outputs:
+>    create-pull-request:
+>       draft: true
+>       allowed-files:
+>          - "**/*.md"
+>       max: 1
+> ```
+
+
 
 ## 7. Optional: Add the Grumpy Reviewer
 
