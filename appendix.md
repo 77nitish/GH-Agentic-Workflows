@@ -35,7 +35,7 @@
    <details>
      <summary>Actions workflow permissions details</summary><br/>
 
-     <img width="40%" alt="Actions workflow permissions 1" src="https://github.com/mburakunuvar/skills-agentic-workflows-that-read-the-room/blob/main/.github/images/actions-permissions-1.png?raw=true" /> 
+     <img width="40%" alt="Actions workflow permissions 1" src="https://github.com/mburakunuvar/skills-agentic-workflows-that-read-the-room/blob/main/.github/images/actions-permissions-1.png?raw=true" />
 
   </details>
 
@@ -43,3 +43,6 @@
      <p align="center">
      <img src="images/actions-enable1.png" width="85%" alt="GitHub Actions permissions set to allow all actions and reusable workflows">
      </p>
+
+## Resources
+- [Agentic workflows no longer need a personal access token](https://github.blog/changelog/2026-06-11-agentic-workflows-no-longer-need-a-personal-access-token/)

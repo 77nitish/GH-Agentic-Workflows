@@ -32,7 +32,7 @@ jobs:
           set -euo pipefail
 
           archive_file="completed-sections1-2-3.md"
-          section_heading="## 4. Add and Run the Daily Repo Status Workflow"
+          section_heading="## 4. Build a Weekly Activity Report Workflow"
           completion_heading="# 🎉 CONGRATULATIONS FOR MAKING IT THIS FAR!!! 🚀🥳"
           first_line="$(head -n 1 README.md)"
 

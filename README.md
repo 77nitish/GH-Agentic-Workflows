@@ -1,24 +1,25 @@
 # GitHub Agentic Workflows Workshop
 
 Build and run secure, AI-powered automations with GitHub Agentic Workflows
-(`gh-aw`). You will install a pre-built workflow, create two workflows from
-natural-language prompts, and review their results through pull requests.
+(`gh-aw`). You will create workflows from natural-language prompts, install
+pre-built workflows, and review their results in issues, pull requests, and
+review comments.
 
-## What are we going to automate today ? 
+## What Are We Going to Automate Today?
 
 | # | Part | Outcome |
 | :--: | --- | --- |
-| 1 | Environment Setup | Create Repository and Configure Codespaces|
-| 2 | Daily repo status | A pre-built workflow that runs on schedule |
-| 3 | New day update | A custom workflow that updates the web app |
-| 4 | Daily FAQ update | Another custom workflow that fetches content and adds data |
-| 5 | Optional review | A `/grumpy` pull request review workflow |
+| 1 | Environment setup | Create a repository and configure Codespaces |
+| 2 | Weekly activity report | Build a custom workflow that creates a weekly report issue |
+| 3 | Daily repository status | Install a pre-built workflow that creates daily status issues |
+| 4 | Daily app update | Build a custom workflow that updates the web app |
+| 5 | Optional FAQ update | Build a custom workflow that fetches and adds FAQ content |
+| 6 | Optional pull request review | Install a pre-built workflow that reviews pull requests |
 
 > [!IMPORTANT]
 > This workshop uses your organization's **Copilot requests** billing. If that
 > option is unavailable or reported as disabled, stop and contact your
 > instructor instead of creating a Personal Access Token (PAT).
-
 
 ## 1. Create Your Workshop Repository
 
@@ -46,8 +47,6 @@ your work is isolated from other students.
 
    Select **Save** if you changed either setting. If an organization policy
    prevents a change, contact your instructor.
-
-
 
 ## 2. Open the Repository in GitHub Codespaces
 
@@ -99,8 +98,6 @@ Run the following commands in the Codespace terminal:
 
 ```bash
 gh extension install github/gh-aw
-gh aw version 
-#  should be something like v0.85.4
 unset GH_TOKEN GITHUB_TOKEN
 gh auth login --web --scopes repo,workflow
 gh auth status
@@ -123,8 +120,9 @@ During `gh auth login`:
 | **6** | Terminal | Wait for the successful authentication message. |
 
 > [!NOTE]
-> The `unset` command makes GitHub CLI use your browser-authenticated > session instead of the restricted token injected by Codespaces. In > every new terminal,
-> run this command again before using `gh` or `gh aw`:
+> The `unset` command makes GitHub CLI use your browser-authenticated session
+> instead of the restricted token injected by Codespaces. In every new
+> terminal, run this command again before using `gh` or `gh aw`.
 
 Initialize Agentic Workflows, then commit the generated repository
 configuration:
@@ -136,9 +134,10 @@ git commit -m "initialize GitHub Agentic Workflows"
 git push origin main
 ```
 
-> [!STATUS UPDATE---SO FAR SO GOOD!]
-> This push triggers the **Part 2 readiness** workflow. Wait for
-> it to finish in the repository's **Actions** tab, then update your Codespace:
+> [!NOTE]
+> **Status update: so far, so good.** This push triggers the **Part 2
+> readiness** workflow. Wait for it to finish in the repository's **Actions**
+> tab, then update your Codespace:
 
 ```bash
 git pull --ff-only origin main
@@ -148,13 +147,67 @@ git pull --ff-only origin main
 > If **Agentic Workflows Agent** does not appear in Copilot Chat, open the
 > Command Palette and run **Developer: Reload Window**.
 
-## 4. Add and Run the Daily Repo Status Workflow
+## 4. Build a Weekly Activity Report Workflow
+
+<p align="center">
+   <img src="images/promptToExecution.png" width="100%" alt="Agentic workflow process from prompt to GitHub Actions execution">
+</p>
+
+1. In Copilot Chat, select the **Agentic Workflows Agent**.
+
+2. Submit this prompt:
+
+   ```text
+   Create .github/workflows/weekly-report-status.md as an Agentic Workflow
+   Markdown file.
+
+   Requirements:
+   - Use the Copilot engine.
+   - Name the workflow Weekly Report Status.
+   - Run every Monday at 09:00 UTC and on demand with workflow_dispatch.
+   - Grant contents: read, issues: read, pull-requests: read, and
+     copilot-requests: write permissions.
+   - Configure safe-outputs.create-issue with a title prefix of
+     "[weekly-report] " and a maximum of one issue.
+   - Generate a concise activity report for the previous seven days, covering
+     commits, issues, and pull requests. Publish the report in a new issue and
+     state clearly when no activity occurred.
+   - Do not compile the workflow.
+   ```
+
+3. Review the generated Markdown, then validate, compile, commit, and run it:
+
+   ```bash
+   gh aw validate weekly-report-status
+   gh aw compile .github/workflows/weekly-report-status.md
+   git add .github/workflows/weekly-report-status.md .github/workflows/weekly-report-status.lock.yml
+   git commit -m "add weekly report status workflow"
+   git push origin main
+   gh aw run weekly-report-status
+   ```
+
+4. Follow the run in the **Actions** tab. When it succeeds, open the
+   **Issues** tab and review the new issue whose title starts with
+   `[weekly-report]`.
+
+> [!NOTE]
+> Agentic workflow Markdown files (`.md`) are the source of truth. Their
+> `.lock.yml` files are generated GitHub Actions workflows. Never edit a
+> `.lock.yml` file manually; run
+> `gh aw compile .github/workflows/FILENAME.md` after changing its Markdown
+> source, then commit both files.
+
+## 5. Install the Daily Repo Status Workflow
+
+[Agentics](https://github.com/githubnext/agentics) is an open-source collection
+of GitHub Agentic Workflows that you can quickly install in your repositories.
 
 Install the
-[Daily Repo Status Report](https://github.com/githubnext/agentics/blob/main/workflows/daily-repo-status.md?plain=1):
+[Daily Repo Status](https://github.com/githubnext/agentics/blob/main/docs/repo-status.md)
+workflow to gather recent repository activity and publish a daily status issue:
 
 ```bash
-gh aw add-wizard githubnext/agentics/daily-repo-status
+gh aw add-wizard githubnext/agentics/repo-status
 ```
 
 Use these selections when prompted:
@@ -175,48 +228,47 @@ Selecting **Copilot requests** makes the wizard add
    <tr>
       <td width="50%" align="center">
          <a href="images/daily-p1.png"><img src="images/daily-p1.png" width="100%" alt="Select GitHub Copilot CLI as the coding agent"></a>
-         <br><sub><strong>1. Select GitHub Copilot CLI</strong></sub>
+         <br><sub><strong>Coding agent: GitHub Copilot CLI</strong></sub>
       </td>
       <td width="50%" align="center">
          <a href="images/daily-p2.png"><img src="images/daily-p2.png" width="100%" alt="Select Copilot requests for authentication"></a>
-         <br><sub><strong>2. Choose Copilot requests</strong></sub>
+         <br><sub><strong>Authentication: Copilot requests</strong></sub>
       </td>
    </tr>
    <tr>
       <td width="50%" align="center">
          <a href="images/daily-p3.png"><img src="images/daily-p3.png" width="100%" alt="Choose the daily workflow schedule"></a>
-         <br><sub><strong>3. Keep the daily schedule</strong></sub>
+         <br><sub><strong>Schedule: Daily</strong></sub>
       </td>
       <td width="50%" align="center">
          <a href="images/daily-p5.png"><img src="images/daily-p5.png" width="100%" alt="Choose whether to attempt to merge the generated pull request"></a>
-         <br><sub><strong>4. Attempt to merge the setup pull request</strong></sub>
+         <br><sub><strong>Setup pull request: Attempt to merge</strong></sub>
       </td>
    </tr>
 </table>
 
 The wizard creates and compiles
-`.github/workflows/daily-repo-status.md`, opens a setup pull request, and
-updates your local default branch after the pull request is merged. It may also
-offer to start the first run.
+`.github/workflows/repo-status.md` and opens a setup pull request. It may also
+offer to merge the pull request and start the first run.
+
+After the setup pull request is merged, update your local default branch:
+
+```bash
+git pull --ff-only origin main
+```
 
 If you skipped the initial run, start it manually:
 
 ```bash
 gh aw status
-gh aw run daily-repo-status
+gh aw run repo-status
 ```
 
 Open the repository's **Actions** tab to follow the run. When it succeeds, open
 the **Issues** tab and find the new issue whose title starts with
 `[repo-status]`.
 
-<p align="center">
-   <img src="images/promptToExecution.png" width="100%" alt="Agentic workflow process from prompt to GitHub Actions execution">
-</p>
-
-
-
-## 5. Create a Custom Workflow for Daily Updates on App
+## 6. Create a Daily App Update Workflow
 
 1. In Copilot Chat, select the **Agentic Workflows Agent**.
 
@@ -230,13 +282,13 @@ the **Issues** tab and find the new issue whose title starts with
    - Run once per day and on demand with workflow_dispatch.
    - Grant contents: read and copilot-requests: write permissions.
    - Enable file editing with tools.edit.
-   - Use safe-outputs.create-pull-request so changes are proposed through a
-     pull request and never written directly to main.
+   - Configure safe-outputs.create-pull-request with index.html as the only
+     allowed file and a maximum of one pull request.
    - Use the workflow run's UTC date.
    - In index.html, add that date to the existing Daily Updates navigation and
      add a matching accessible dialog that confirms the daily update ran.
    - Follow the existing HTML structure, ID conventions, date wording, and
-     styling. Do not modify styles.css unless it is necessary.
+     styling. Do not modify styles.css.
    - Do not duplicate a date, navigation control, or dialog. If the UTC date is
      already present, make no change.
    - Preserve every existing daily update.
@@ -265,16 +317,7 @@ the **Issues** tab and find the new issue whose title starts with
    Complete this step before creating the next workflow so both workflows start
    from the same version of `index.html`.
 
-> [!NOTE]
-> Agentic workflow Markdown files (`.md`) are the source of truth. Their
-> `.lock.yml` files are generated GitHub Actions workflows. Never edit a
-> `.lock.yml` file manually; run
-> `gh aw compile .github/workflows/FILENAME.md` after changing its Markdown
-> source, then commit both files.
-
-
-
-## 6. Create another Custom Workflow Highlights
+## 7. Optional: Create a Daily FAQ Workflow
 
 1. In Copilot Chat, keep **Agentic Workflows Agent** selected.
 
@@ -289,11 +332,11 @@ the **Issues** tab and find the new issue whose title starts with
    - Run every six hours and on demand with workflow_dispatch.
    - Grant contents: read and copilot-requests: write permissions.
    - Enable tools.edit and tools.web-fetch.
+   - Configure network.allowed with github.github.com.
    - Fetch the GitHub Agentic Workflows FAQ:
-     https://github.github.com/gh-aw/reference/faq/ 
+     https://github.github.com/gh-aw/reference/faq/
    - Select one FAQ that is not already represented in index.html.
-   - Use the workflow run's UTC date. 
-   - Add required network allowed
+   - Use the workflow run's UTC date.
    - Add the selected question and a concise, accurate answer to the matching
      Daily Updates dialog in index.html. If that date already has a placeholder
      dialog, reuse it; otherwise add a matching navigation control and dialog.
@@ -301,8 +344,8 @@ the **Issues** tab and find the new issue whose title starts with
      styling. Preserve all existing updates.
    - Never duplicate a date, navigation control, dialog, or FAQ. If today's
      dialog already contains an FAQ, or no unused FAQ remains, make no change.
-   - Use safe-outputs.create-pull-request so changes are proposed through a
-     pull request and never written directly to main.
+   - Configure safe-outputs.create-pull-request with index.html as the only
+     allowed file and a maximum of one pull request.
    - Validate the workflow with gh aw validate highlights-of-day.
    - Do not compile the workflow.
    ```
@@ -322,9 +365,8 @@ the **Issues** tab and find the new issue whose title starts with
    request. A later run on the same UTC day should not create a duplicate
    update.
 
-
 > [!NOTE]
-> ### What Is a Safe Output?
+> **What is a safe output?**
 >
 > A safe output is a controlled GitHub write operation declared under
 > `safe-outputs:`. The agent remains read-only and requests a narrowly configured
@@ -346,34 +388,23 @@ the **Issues** tab and find the new issue whose title starts with
 >
 > ```yaml
 > safe-outputs:
->    create-issue:
->       title-prefix: "[quality] "
->       max: 1
-> ```
->
-> **Add a comment:**
->
-> ```yaml
-> safe-outputs:
->    add-comment:
->       max: 1
->       hide-older-comments: true
+>   create-issue:
+>     title-prefix: "[quality] "
+>     max: 1
 > ```
 >
 > **Create a pull request:**
 >
 > ```yaml
 > safe-outputs:
->    create-pull-request:
->       draft: true
->       allowed-files:
->          - "**/*.md"
->       max: 1
+>   create-pull-request:
+>     draft: true
+>     allowed-files:
+>       - "**/*.md"
+>     max: 1
 > ```
 
-
-
-## 7. Optional: Add the Grumpy Reviewer
+## 8. Optional: Add the Grumpy Reviewer
 
 The
 [Grumpy Reviewer](https://github.com/githubnext/agentics/blob/main/docs/grumpy-reviewer.md)
@@ -414,7 +445,7 @@ and add one of these comments:
 
 ## References
 
-- [GitHub Agentic Workflows documentation](https://github.github.com/gh-aw/) 
+- [GitHub Agentic Workflows documentation](https://github.github.com/gh-aw/)
 - [GH-AW-WORKSHOP](https://githubnext.github.io/gh-aw-workshop/#00-welcome)
 - [`gh-aw` CLI reference](https://github.github.com/gh-aw/setup/cli/)
 - [Workflow permissions](https://github.github.com/gh-aw/reference/permissions/)
