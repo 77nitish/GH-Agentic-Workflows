@@ -222,7 +222,7 @@ the **Issues** tab and find the new issue whose title starts with
 
 
 
-## 5. Create a Daily Website Update Workflow
+## 5. Create a Custom Workflow for Daily Updates on App
 
 1. In Copilot Chat, select the **Agentic Workflows Agent**.
 
@@ -319,14 +319,14 @@ safe-outputs:
       max: 1
 ```
 
-## 6. Create a Daily FAQ Workflow
+## 6. Create another Custom Workflow Highlights
 
 1. In Copilot Chat, keep **Agentic Workflows Agent** selected.
 
 2. Submit this prompt:
 
    ```text
-   Create .github/workflows/daily-new-infos.md as an Agentic Workflow Markdown
+   Create .github/workflows/highlights-of-day.md as an Agentic Workflow Markdown
    file.
 
    Requirements:
@@ -348,19 +348,19 @@ safe-outputs:
      dialog already contains an FAQ, or no unused FAQ remains, make no change.
    - Use safe-outputs.create-pull-request so changes are proposed through a
      pull request and never written directly to main.
-   - Validate the workflow with gh aw validate daily-new-infos.
+   - Validate the workflow with gh aw validate highlights-of-day.
    - Do not compile the workflow.
    ```
 
 3. Review the generated Markdown, then validate, compile, commit, and run it:
 
    ```bash
-   gh aw validate daily-new-infos
-   gh aw compile .github/workflows/daily-new-infos.md
-   git add .github/workflows/daily-new-infos.md .github/workflows/daily-new-infos.lock.yml
+   gh aw validate highlights-of-day
+   gh aw compile .github/workflows/highlights-of-day.md
+   git add .github/workflows/highlights-of-day.md .github/workflows/highlights-of-day.lock.yml
    git commit -m "add daily FAQ workflow"
    git push origin main
-   gh aw run daily-new-infos
+   gh aw run highlights-of-day
    ```
 
 4. Follow the run in the **Actions** tab, then review and merge its pull
