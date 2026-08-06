@@ -13,7 +13,7 @@ review comments.
 | 2 | [Open the Repository in GitHub Codespaces](#2-open-the-repository-in-github-codespaces) | Configure and explore the development environment |
 | 3 | [Install and Initialize `gh-aw`](#3-install-and-initialize-gh-aw) | Prepare the repository for Agentic Workflows |
 | 4 | [Weekly Activity Report Workflow](#4-a-custom-agentic-workflow---weekly-activity-report) | Create a custom workflow that publishes a weekly report issue |
-| 5 | [Repository Quality Improver from GH Agentics](#5-install-prebaked-repository-quality-improver-from-gh-agentics) | Install a pre-built workflow that publishes daily status issues |
+| 5 | [Code-Simplifier from GH Agentics](#5-install-prebaked-repository-quality-improver-from-gh-agentics) | Install a pre-built workflow that publishes daily status issues |
 | 6 | [Create a Daily App Update Workflow](#6-create-a-daily-app-update-workflow) | Create a custom workflow that updates the web app |
 | 7 | [Optional: Create a Daily FAQ Workflow](#7-optional-create-a-daily-faq-workflow) | Create a custom workflow that fetches and adds FAQ content |
 | 8 | [Optional: Add the Grumpy Reviewer](#8-optional-add-the-grumpy-reviewer) | Install a pre-built workflow that reviews pull requests |
@@ -143,10 +143,11 @@ git push origin main
 ```
 
 > [!NOTE]
-> **Status update: so far, so good.**
-> After this first push, the **ready-for-part2** GitHub Actions workflow runs
-> automatically. It archives sections 1–3, shortens this README for the rest of
-> the workshop, and then disables itself.
+> **Optional:** After this first push, the hand-written, deterministic
+> **ready-for-part2** GitHub Actions workflow runs automatically. It archives
+> sections 1–3, shortens this README for the rest of the workshop, and then
+> disables itself. This example demonstrates that GitHub Actions and Agentic
+> Workflows can coexist.
 > If the run fails, open the **Actions** tab, select **ready-for-part2**, and
 > choose **Run workflow** to retry it manually.
 
@@ -226,20 +227,22 @@ Let's build our first gh aw to track what's going on in our repository on a week
 > `gh aw compile .github/workflows/FILENAME.md` after changing its Markdown
 > source, then commit both files.
 
-## 5. Install Prebaked Repository Quality Improver from GH Agentics
+## 5. Install Prebaked Code-Simplifier from GH Agentics
 
 [Agentics](https://github.com/githubnext/agentics) is an open-source collection
 of GitHub Agentic Workflows that you can quickly install in your repositories.
 
 Install the
-[Repository Quality Improver](https://github.com/githubnext/agentics/blob/main/docs/repository-quality-improver.md) which
-analyzes your repository from a different quality angle every weekday and produces an issue with findings and actionable improvement tasks.
+[Code Simplifier](https://github.com/githubnext/agentics/blob/main/docs/code-simplifier.md) automatically analyze recently modified code and create pull requests with simplifications that improve clarity and maintainability
 
 ```bash
-gh aw add https://github.com/githubnext/agentics/blob/main/workflows/repository-quality-improver.md 
-gh aw compile
+# Install the 'gh aw' extension
+gh extension install github/gh-aw
+
+# Add the workflow to your repository
+gh aw add-wizard githubnext/agentics/code-simplifier
 ```
-<!-- 
+
 Use these selections when prompted:
 
 | # | Prompt | Selection |
@@ -278,23 +281,48 @@ Selecting **Copilot requests** makes the wizard add
 </table>
 
 The wizard creates and compiles
-`.github/workflows/repository-quality-improver.md` and opens a setup pull
-request. It may also offer to merge the pull request and start the first run. -->
-<!-- 
+`.github/workflows/code-simplifier.md` and opens a setup pull
+request. It may also offer to merge the pull request and start the first run. 
+
 After the setup pull request is merged, update your local default branch:
 
 ```bash
 git pull --ff-only origin main
-``` -->
+```
 
-If you skipped the initial run, start it manually:
+### Manually Editing Permissions
+
+Add the following lines to the frontmatter of
+`.github/workflows/code-simplifier.md`:
+
+```yaml
+permissions:
+   actions: read
+   attestations: read
+   checks: read
+   contents: read
+   deployments: read
+   discussions: read
+   id-token: none
+   issues: read
+   packages: read
+   pages: read
+   pull-requests: read
+   security-events: read
+   statuses: read
+   copilot-requests: write
+```
+
+### Compile Commit Push Again to enable updates:
 
 ```bash
+gh aw compile .github/workflows/code-simplifier.md
 git add .
-git commit -m "added prebuilt aw Repository Quality Improver" 
+git commit -m "added prebuilt aw Code-Simplifier" 
 git push origin main
 gh aw status
-gh aw run repository-quality-improver
+# run directly from the UI or
+gh aw run code-simplifier
 ```
 
 Open the repository's **Actions** tab to follow the run. When it succeeds, open

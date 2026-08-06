@@ -50,6 +50,7 @@ jobs:
 
           archive_file="completed-sections1-2-3.md"
           section_heading="## 4. A custom agentic workflow - Weekly Activity Report"
+          agenda_heading="## What Are We Going to Automate Today?"
           completion_heading="# 🎉 CONGRATULATIONS FOR MAKING IT THIS FAR!!! 🚀🥳"
           first_line="$(head -n 1 README.md)"
           mapfile -t section_matches < <(grep -nF "$section_heading" README.md || true)
@@ -59,11 +60,13 @@ jobs:
             exit 1
           fi
 
-          if [[ "$first_line" == "$completion_heading" ]]; then
+          if [[ "$first_line" == "$agenda_heading" ]]; then
             if [[ ! -f "$archive_file" ]] ||
                [[ ! -s "$archive_file" ]] ||
                ! grep -qF "## 3. Install and Initialize \`gh-aw\`" "$archive_file" ||
-               grep -qF "$section_heading" "$archive_file"; then
+               grep -qF "$section_heading" "$archive_file" ||
+               ! grep -qFx "$completion_heading" README.md ||
+               ! grep -qE '^\| 4 \|' README.md; then
               echo "::error::README.md has transitioned to part 2, but its archive is missing or invalid."
               exit 1
             fi
@@ -82,14 +85,33 @@ jobs:
 
             head -n "$((section_line - 1))" README.md > "$archive_temp"
 
+            awk -v heading="$agenda_heading" '
+              $0 == heading {
+                in_agenda = 1
+              }
+
+              in_agenda && table_started && !/^\|/ {
+                exit
+              }
+
+              in_agenda && /^\|/ {
+                table_started = 1
+              }
+
+              in_agenda && $0 !~ /^\| [1-3] \|/ {
+                print
+              }
+            ' README.md > "$readme_temp"
+
             printf '%s\n' \
+              '' \
               '# 🎉 CONGRATULATIONS FOR MAKING IT THIS FAR!!! 🚀🥳' \
               '' \
               "## NOW IT'S TIME FOR THE MOST FUN PART! 🤖✨" \
               '' \
               'Need to revisit setup? Review the' \
               '[completed sections 1–3](completed-sections1-2-3.md).' \
-              '' > "$readme_temp"
+              '' >> "$readme_temp"
             tail -n "+$section_line" README.md >> "$readme_temp"
 
             if [[ ! -s "$archive_temp" ]] || ! grep -qF "## 3. Install and Initialize \`gh-aw\`" "$archive_temp"; then
@@ -102,7 +124,10 @@ jobs:
               exit 1
             fi
 
-            if [[ "$(head -n 1 "$readme_temp")" != "$completion_heading" ]] ||
+            if [[ "$(head -n 1 "$readme_temp")" != "$agenda_heading" ]] ||
+               ! grep -qE '^\| 4 \|' "$readme_temp" ||
+               grep -qE '^\| [1-3] \|' "$readme_temp" ||
+               [[ "$(grep -cFx "$completion_heading" "$readme_temp")" -ne 1 ]] ||
                [[ "$(grep -cF "$section_heading" "$readme_temp")" -ne 1 ]]; then
               echo "::error::The generated part 2 README is invalid."
               exit 1
