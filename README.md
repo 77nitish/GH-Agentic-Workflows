@@ -9,17 +9,15 @@ review comments.
 
 | # | Part | Outcome |
 | :--: | --- | --- |
-| 1 | Environment setup | Create a repository and configure Codespaces |
-| 2 | Weekly activity report | Build a custom workflow that creates a weekly report issue |
-| 3 | Daily repository status | Install a pre-built workflow that creates daily status issues |
-| 4 | Daily app update | Build a custom workflow that updates the web app |
-| 5 | Optional FAQ update | Build a custom workflow that fetches and adds FAQ content |
-| 6 | Optional pull request review | Install a pre-built workflow that reviews pull requests |
+| 1 | [Create Your Workshop Repository](#1-create-your-workshop-repository) | Create an isolated repository from the workshop template |
+| 2 | [Open the Repository in GitHub Codespaces](#2-open-the-repository-in-github-codespaces) | Configure and explore the development environment |
+| 3 | [Install and Initialize `gh-aw`](#3-install-and-initialize-gh-aw) | Prepare the repository for Agentic Workflows |
+| 4 | [Weekly Activity Report Workflow](#4-a-custom-agentic-workflow---weekly-activity-report) | Create a custom workflow that publishes a weekly report issue |
+| 5 | [Repository Quality Improver from GH Agentics](#5-install-prebaked-repository-quality-improver-from-gh-agentics) | Install a pre-built workflow that publishes daily status issues |
+| 6 | [Create a Daily App Update Workflow](#6-create-a-daily-app-update-workflow) | Create a custom workflow that updates the web app |
+| 7 | [Optional: Create a Daily FAQ Workflow](#7-optional-create-a-daily-faq-workflow) | Create a custom workflow that fetches and adds FAQ content |
+| 8 | [Optional: Add the Grumpy Reviewer](#8-optional-add-the-grumpy-reviewer) | Install a pre-built workflow that reviews pull requests |
 
-> [!IMPORTANT]
-> This workshop uses your organization's **Copilot requests** billing. If that
-> option is unavailable or reported as disabled, stop and contact your
-> instructor instead of creating a Personal Access Token (PAT).
 
 ## 1. Create Your Workshop Repository
 
@@ -47,6 +45,11 @@ your work is isolated from other students.
 
    Select **Save** if you changed either setting. If an organization policy
    prevents a change, contact your instructor.
+
+> [!IMPORTANT]
+> This workshop uses your organization's **Copilot requests** billing. For
+> personal accounts that require a Personal Access Token (PAT), see the
+> [Appendix](appendix.md).
 
 ## 2. Open the Repository in GitHub Codespaces
 
@@ -98,15 +101,20 @@ Run the following commands in the Codespace terminal:
 
 ```bash
 gh extension install github/gh-aw
-unset GH_TOKEN GITHUB_TOKEN
-gh auth login --web --scopes repo,workflow
-gh auth status
 gh aw version
 ```
 
 > [!TIP]
 > If `gh-aw` is already installed, replace the first command with
 > `gh extension upgrade gh-aw`.
+
+
+```bash 
+unset GH_TOKEN GITHUB_TOKEN
+gh auth login --web --scopes repo,workflow
+gh auth status
+gh aw version
+```
 
 During `gh auth login`:
 
@@ -128,16 +136,16 @@ Initialize Agentic Workflows, then commit the generated repository
 configuration:
 
 ```bash
-gh aw init
+gh aw init --engine copilot
 git add .
 git commit -m "initialize GitHub Agentic Workflows"
 git push origin main
 ```
 
 > [!NOTE]
-> **Status update: so far, so good.** This push triggers the **Part 2
-> readiness** workflow. Wait for it to finish in the repository's **Actions**
-> tab, then update your Codespace:
+> **Status update: so far, so good.** After this push, open the repository's
+> **Actions** tab, select **ready-for-part2**, choose **Run workflow**, and wait
+> for it to finish. Then update your Codespace:
 
 ```bash
 git pull --ff-only origin main
@@ -147,7 +155,24 @@ git pull --ff-only origin main
 > If **Agentic Workflows Agent** does not appear in Copilot Chat, open the
 > Command Palette and run **Developer: Reload Window**.
 
-## 4. Build a Weekly Activity Report Workflow
+
+> [!OPTIONAL]
+> There is a deterministic Github Action workflow in this repository that you can manually trigger. It'll make the README.md. This simple example is provided only to demonstrate that Github Action and GH AW can co-exist in the same repo. 
+
+
+
+## 4. A custom agentic workflow - Weekly Activity Report 
+
+> [!NOTE]
+> **Status update: so far, so good.** 
+> Don't forget to synch your local with remote. Hopefully now README is shorter clearer 😊🤞🍀
+
+```bash
+git pull --ff-only origin main
+```
+
+Let's build our first gh aw to track what's going on in our repository on a weekly basis
+
 
 <p align="center">
    <img src="images/promptToExecution.png" width="100%" alt="Agentic workflow process from prompt to GitHub Actions execution">
@@ -164,7 +189,7 @@ git pull --ff-only origin main
    Requirements:
    - Use the Copilot engine.
    - Name the workflow Weekly Report Status.
-   - Run every Monday at 09:00 UTC and on demand with workflow_dispatch.
+   - Run on schedule every Monday and on demand with workflow_dispatch.
    - Grant contents: read, issues: read, pull-requests: read, and
      copilot-requests: write permissions.
    - Configure safe-outputs.create-issue with a title prefix of
@@ -180,8 +205,8 @@ git pull --ff-only origin main
    ```bash
    gh aw validate weekly-report-status
    gh aw compile .github/workflows/weekly-report-status.md
-   git add .github/workflows/weekly-report-status.md .github/workflows/weekly-report-status.lock.yml
-   git commit -m "add weekly report status workflow"
+   git add . 
+   git commit -m "added custom weekly report status workflow"
    git push origin main
    gh aw run weekly-report-status
    ```
@@ -197,17 +222,17 @@ git pull --ff-only origin main
 > `gh aw compile .github/workflows/FILENAME.md` after changing its Markdown
 > source, then commit both files.
 
-## 5. Install the Daily Repo Status Workflow
+## 5. Install Prebaked Repository Quality Improver from GH Agentics
 
 [Agentics](https://github.com/githubnext/agentics) is an open-source collection
 of GitHub Agentic Workflows that you can quickly install in your repositories.
 
 Install the
-[Daily Repo Status](https://github.com/githubnext/agentics/blob/main/docs/repo-status.md)
-workflow to gather recent repository activity and publish a daily status issue:
+[Repository Quality Improver](https://github.com/githubnext/agentics/blob/main/docs/repository-quality-improver.md)
+analyzes your repository from a different quality angle every weekday, producing an issue with findings and actionable improvement tasks.
 
 ```bash
-gh aw add-wizard githubnext/agentics/repo-status
+gh aw add https://github.com/githubnext/agentics/blob/main/workflows/repository-quality-improver.md 
 ```
 
 Use these selections when prompted:
@@ -248,8 +273,8 @@ Selecting **Copilot requests** makes the wizard add
 </table>
 
 The wizard creates and compiles
-`.github/workflows/repo-status.md` and opens a setup pull request. It may also
-offer to merge the pull request and start the first run.
+`.github/workflows/repository-quality-improver.md` and opens a setup pull
+request. It may also offer to merge the pull request and start the first run.
 
 After the setup pull request is merged, update your local default branch:
 
@@ -261,12 +286,11 @@ If you skipped the initial run, start it manually:
 
 ```bash
 gh aw status
-gh aw run repo-status
+gh aw run repository-quality-improver
 ```
 
 Open the repository's **Actions** tab to follow the run. When it succeeds, open
-the **Issues** tab and find the new issue whose title starts with
-`[repo-status]`.
+the **Issues** tab and find the new repository quality improvement report.
 
 ## 6. Create a Daily App Update Workflow
 
@@ -301,8 +325,8 @@ the **Issues** tab and find the new issue whose title starts with
    ```bash
    gh aw validate new-day
    gh aw compile .github/workflows/new-day.md
-   git add .github/workflows/new-day.md .github/workflows/new-day.lock.yml
-   git commit -m "add daily website update workflow"
+   git add .
+   git commit -m "added daily website update workflow"
    git push origin main
    gh aw run new-day
    ```
@@ -355,8 +379,8 @@ the **Issues** tab and find the new issue whose title starts with
    ```bash
    gh aw validate highlights-of-day
    gh aw compile .github/workflows/highlights-of-day.md
-   git add .github/workflows/highlights-of-day.md .github/workflows/highlights-of-day.lock.yml
-   git commit -m "add daily FAQ workflow"
+   git add . 
+   git commit -m "fetched and added highlights of the day"
    git push origin main
    gh aw run highlights-of-day
    ```
