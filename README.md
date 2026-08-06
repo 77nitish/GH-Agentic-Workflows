@@ -37,26 +37,31 @@ so you have an independent copy.
 
 ## 2. Open Your Repository in GitHub Codespaces
 
-1. Open the Codespaces creation page:
+1. Click **Code** to Open the Codespaces creation page:
 
    <p align="center">
-      <a href="https://codespaces.new"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
+      <a href="https://codespaces.new"><img src="images/create-codespace.png" width="40%"  alt="Open in GitHub Codespaces"></a>
    </p>
 
-2. In the **Repository** field, select the repository you created in the
-   previous section. Keep the default settings and select **Create codespace**.
+2. Ckick Create Codespaces on Main , no need to change any settings.
 
-3. Wait for Visual Studio Code to finish loading. Initial setup may take a few
-   minutes while the development container installs its dependencies.
+3. Wait for Visual Studio Code to finish loading. Initial setup may take a few minutes while the development container installs its dependencies. 
+
+4. Trust Folder and Continue if requested 
+
+ <p align="center">
+      <a href="https://codespaces.new"><img src="images/trust-codespaces.png" width="40%"  alt="Open in GitHub Codespaces"></a>
+   </p>
 
 ### Explore the Project
 
-- In Copilot Chat, try:
+- In Copilot Chat, try some sample questions such as 
 
   > Briefly explain #codespace
+  > Are there any agentic  workflows used in this repo ? Don't take any action. 
 
   <p align="center">
-     <img src="images/briefly-explain.png" width="75%" alt="GitHub Copilot Chat explaining the Codespace">
+     <img src="images/briefly-explain.png" width="40%" alt="GitHub Copilot Chat explaining the Codespace">
   </p>
 
 - To preview the sample application, right-click `index.html` and select
@@ -83,10 +88,30 @@ Run these commands in the Codespace terminal:
 gh extension install github/gh-aw
 unset GH_TOKEN GITHUB_TOKEN
 gh auth login --web --scopes workflow
+```
+
+Follow these authentication steps:
+
+| Step | Where | Action |
+| :--: | --- | --- |
+| **1** | Terminal | For the preferred protocol, select **HTTPS**. |
+| **2** | Terminal | When asked to authenticate Git, select **Yes**. |
+| **3** | Terminal | Copy the one-time code, then press **Enter** to open GitHub. |
+| **4** | Browser | Continue with your signed-in account and enter the one-time code. |
+| **5** | Browser | Select **Authorize GitHub CLI**. |
+| **6** | Terminal | Wait for the **Congratulations, you're all set!** confirmation. |
+
+After authentication succeeds, return to the same terminal and initialize
+`gh-aw`:
+
+```bash
 gh aw init
 ```
 
-Complete the browser sign-in when prompted, then return to the same terminal.
+> [!TIP]
+> If **Agentic Workflows Agent** does not appear in Copilot Chat, open the
+> Command Palette and run **Developer: Reload Window**.
+
 The `unset` command ensures that GitHub CLI uses your browser-authenticated
 session instead of the restricted token provided by Codespaces.
 
@@ -116,7 +141,17 @@ Start the setup wizard:
 gh aw add-wizard githubnext/agentics/daily-repo-status
 ```
 
-Use the following selections:
+Follow these five wizard steps:
+
+| Step | When prompted for | Select |
+| :--: | --- | --- |
+| **1** | Coding agent | **GitHub Copilot CLI** |
+| **2** | Authentication method | **Copilot requests** (uses your organization's Copilot billing; no PAT required) |
+| **3** | Schedule | **Daily** |
+| **4** | Pull request creation | **Yes, create a pull request** |
+| **5** | Pull request handling | **Attempt to merge** |
+
+Use the screenshots below as a visual reference:
 
 <table>
    <tr>
@@ -135,8 +170,8 @@ Use the following selections:
          <br><sub><strong>3. Keep the daily schedule</strong></sub>
       </td>
       <td width="50%" align="center">
-         <a href="images/daily-p5.png"><img src="images/daily-p5.png" width="100%" alt="Choose to merge the generated pull request"></a>
-         <br><sub><strong>4. Merge the generated pull request</strong></sub>
+         <a href="images/daily-p5.png"><img src="images/daily-p5.png" width="100%" alt="Choose whether to attempt to merge the generated pull request"></a>
+         <br><sub><strong>5. Attempt to merge the pull request</strong></sub>
       </td>
    </tr>
 </table>
@@ -149,3 +184,65 @@ git pull
 gh aw status
 gh aw run
 ```
+
+## 4. Create Your First Agentic Workflow
+
+1. In Copilot Chat, select the **Agentic Workflows Agent**.
+
+2. Submit a prompt like this:
+
+   ```text
+   Create .github/workflows/new-day.md as an agentic workflow Markdown file.
+
+   - Run the workflow every day or on demand with workflow_dispatch.
+   - Give the workflow edit access through the tools configuration.
+   - Use safe-outputs with create-pull-request so the agent can propose changes
+     without writing directly to main.
+   - Add the day of the run to the navbar in index.html.
+   - Create a pull request.
+   - Check that the agentic workflow configuration syntax is valid.
+   - Do not compile the workflow.
+   ```
+
+   <p align="center">
+      <img src="images/promptToExecution.png" width="100%" alt="Agentic workflow process from prompt to GitHub Actions execution">
+   </p>
+
+3. After the agent creates the workflow, compile it in the terminal:
+
+   ```bash
+   gh aw compile
+   ```
+
+## 5. Create Your 2nd Agentic Workflow
+
+1. In Copilot Chat, select the **Agentic Workflows Agent**.
+
+2. Submit the following prompt:
+
+   ```text
+   Create .github/workflows/daily-new-infos.md as an agentic workflow Markdown file.
+
+   Configure the workflow to:
+
+   - Run every six hours and on demand with workflow_dispatch.
+   - Use web fetch to read the GitHub Agentic Workflows Frequently Asked
+     Questions page:
+     https://github.github.com/gh-aw/reference/faq/
+   - Select one FAQ that is not already shown in index.html.
+   - Add the selected FAQ to index.html as a new popup for the day on which the
+     workflow runs. Add that day to the Daily Updates navigation so it opens the
+     new popup, and match the existing page structure and styling.
+   - Give the workflow edit access through its tools configuration.
+   - Use safe-outputs with create-pull-request so the agent can propose changes
+     without writing directly to main.
+   - Create a pull request for the proposed changes.
+   - Check that the agentic workflow configuration syntax is valid.
+   - Do not compile the workflow.
+   ```
+
+3. After the agent creates the workflow, compile it in the terminal:
+
+   ```bash
+   gh aw compile
+   ```
