@@ -157,7 +157,7 @@ git pull --ff-only origin main
 
 
 > [!OPTIONAL]
-> There is a deterministic Github Action workflow in this repository that you can manually trigger. It'll make the README.md. This simple example is provided only to demonstrate that Github Action and GH AW can co-exist in the same repo. 
+> There is a deterministic Github Action workflow in this repository that you can manually trigger. It'll make the README.md leaner and easier to follow for the rest of workshop. This simple example is provided only to demonstrate that Github Action and GH AW can co-exist in the same repo. 
 
 
 
@@ -228,13 +228,14 @@ Let's build our first gh aw to track what's going on in our repository on a week
 of GitHub Agentic Workflows that you can quickly install in your repositories.
 
 Install the
-[Repository Quality Improver](https://github.com/githubnext/agentics/blob/main/docs/repository-quality-improver.md)
-analyzes your repository from a different quality angle every weekday, producing an issue with findings and actionable improvement tasks.
+[Repository Quality Improver](https://github.com/githubnext/agentics/blob/main/docs/repository-quality-improver.md) which
+analyzes your repository from a different quality angle every weekday and produces an issue with findings and actionable improvement tasks.
 
 ```bash
 gh aw add https://github.com/githubnext/agentics/blob/main/workflows/repository-quality-improver.md 
+gh aw compile
 ```
-
+<!-- 
 Use these selections when prompted:
 
 | # | Prompt | Selection |
@@ -274,17 +275,20 @@ Selecting **Copilot requests** makes the wizard add
 
 The wizard creates and compiles
 `.github/workflows/repository-quality-improver.md` and opens a setup pull
-request. It may also offer to merge the pull request and start the first run.
-
+request. It may also offer to merge the pull request and start the first run. -->
+<!-- 
 After the setup pull request is merged, update your local default branch:
 
 ```bash
 git pull --ff-only origin main
-```
+``` -->
 
 If you skipped the initial run, start it manually:
 
 ```bash
+git add .
+git commit -m "added prebuilt aw Repository Quality Improver" 
+git push origin main
 gh aw status
 gh aw run repository-quality-improver
 ```
