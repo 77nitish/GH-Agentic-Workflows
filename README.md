@@ -78,7 +78,7 @@ Briefly explain #codebase.
 ```
 
 ```text
-Are there any agentic workflows in this repository? Do not take any action.
+Is agentic workflows installed in this repository? Do not take any action.
 ```
 
 <p align="center">
@@ -143,9 +143,14 @@ git push origin main
 ```
 
 > [!NOTE]
-> **Status update: so far, so good.** After this push, open the repository's
-> **Actions** tab, select **ready-for-part2**, choose **Run workflow**, and wait
-> for it to finish. Then update your Codespace:
+> **Status update: so far, so good.**
+> After this first push, the **ready-for-part2** GitHub Actions workflow runs
+> automatically. It archives sections 1–3, shortens this README for the rest of
+> the workshop, and then disables itself.
+> If the run fails, open the **Actions** tab, select **ready-for-part2**, and
+> choose **Run workflow** to retry it manually.
+
+Then update your Codespace:
 
 ```bash
 git pull --ff-only origin main
@@ -156,8 +161,7 @@ git pull --ff-only origin main
 > Command Palette and run **Developer: Reload Window**.
 
 
-> [!OPTIONAL]
-> There is a deterministic Github Action workflow in this repository that you can manually trigger. It'll make the README.md leaner and easier to follow for the rest of workshop. This simple example is provided only to demonstrate that Github Action and GH AW can co-exist in the same repo. 
+
 
 
 
