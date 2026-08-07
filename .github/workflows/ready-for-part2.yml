@@ -52,6 +52,71 @@ jobs:
           section_heading="## 4. A custom agentic workflow - Weekly Activity Report"
           agenda_heading="## What Are We Going to Automate Today?"
           completion_heading="# 🎉 CONGRATULATIONS FOR MAKING IT THIS FAR!!! 🚀🥳"
+
+          extract_agenda_block() {
+            awk -v heading="$agenda_heading" '
+              $0 == heading {
+                in_agenda = 1
+                print
+                next
+              }
+
+              !in_agenda {
+                next
+              }
+
+              table_started && !/^\|/ {
+                exit
+              }
+
+              /^\|/ {
+                table_started = 1
+                print
+                next
+              }
+
+              /^[[:space:]]*$/ {
+                print
+                next
+              }
+
+              exit
+            ' "$1"
+          }
+
+          validate_part2_readme() {
+            local readme_file="$1"
+            local readme_label="$2"
+            local agenda_block
+
+            if [[ "$(head -n 1 "$readme_file")" != "$agenda_heading" ]]; then
+              echo "::error::$readme_label does not start with the agenda heading."
+              return 1
+            fi
+
+            agenda_block="$(extract_agenda_block "$readme_file")"
+
+            if ! grep -qE '^\| 4 \|' <<< "$agenda_block"; then
+              echo "::error::The agenda table in $readme_label does not contain section 4."
+              return 1
+            fi
+
+            if grep -qE '^\| [1-3] \|' <<< "$agenda_block"; then
+              echo "::error::The agenda table in $readme_label still contains sections 1-3."
+              return 1
+            fi
+
+            if [[ "$(grep -cFx "$completion_heading" "$readme_file" || true)" -ne 1 ]]; then
+              echo "::error::$readme_label must contain exactly one completion heading."
+              return 1
+            fi
+
+            if [[ "$(grep -cF "$section_heading" "$readme_file" || true)" -ne 1 ]]; then
+              echo "::error::$readme_label must contain exactly one section 4 heading."
+              return 1
+            fi
+          }
+
           first_line="$(head -n 1 README.md)"
           mapfile -t section_matches < <(grep -nF "$section_heading" README.md || true)
 
@@ -64,10 +129,12 @@ jobs:
             if [[ ! -f "$archive_file" ]] ||
                [[ ! -s "$archive_file" ]] ||
                ! grep -qF "## 3. Install and Initialize \`gh-aw\`" "$archive_file" ||
-               grep -qF "$section_heading" "$archive_file" ||
-               ! grep -qFx "$completion_heading" README.md ||
-               ! grep -qE '^\| 4 \|' README.md; then
+               grep -qF "$section_heading" "$archive_file"; then
               echo "::error::README.md has transitioned to part 2, but its archive is missing or invalid."
+              exit 1
+            fi
+
+            if ! validate_part2_readme README.md "README.md"; then
               exit 1
             fi
 
@@ -124,12 +191,7 @@ jobs:
               exit 1
             fi
 
-            if [[ "$(head -n 1 "$readme_temp")" != "$agenda_heading" ]] ||
-               ! grep -qE '^\| 4 \|' "$readme_temp" ||
-               grep -qE '^\| [1-3] \|' "$readme_temp" ||
-               [[ "$(grep -cFx "$completion_heading" "$readme_temp")" -ne 1 ]] ||
-               [[ "$(grep -cF "$section_heading" "$readme_temp")" -ne 1 ]]; then
-              echo "::error::The generated part 2 README is invalid."
+            if ! validate_part2_readme "$readme_temp" "The generated part 2 README"; then
               exit 1
             fi
 
