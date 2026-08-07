@@ -80,7 +80,7 @@ jobs:
                 next
               }
 
-              exit
+              { exit }
             ' "$1"
           }
 
