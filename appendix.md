@@ -1,5 +1,42 @@
 ## APPENDIX
 
+
+### Quick Start in your own environment
+
+Reference: [GitHub Agentic Workflows quick start](https://github.github.com/gh-aw/setup/quick-start/)
+
+#### Prerequisites
+
+Before installing, ensure you have:
+
+- **AI account** - GitHub Copilot, Anthropic Claude, OpenAI Codex, or Google Gemini. If you already have GitHub Copilot, start there—it requires no extra account setup.
+- **GitHub repository** - A repository where you have write access.
+- **GitHub Actions enabled** - Check in **Settings** → **Actions**.
+- **GitHub CLI (`gh`) v2.0.0+** - [Install GitHub CLI](https://cli.github.com/). Check your version with `gh --version`.
+- **Logged in to GitHub CLI** - Verify with `gh auth status`, and run `gh auth login --scopes repo,workflow` if needed.
+- **Operating system** - Linux, macOS, or Windows with WSL.
+
+#### Step 1 - Install the extension
+
+Install the GitHub Agentic Workflows extension:
+
+```bash
+gh extension install github/gh-aw
+```
+
+> [!TIP]
+> If you encounter authentication issues, use the installation script instead:
+>
+> ```bash
+> curl -sL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh | bash
+> ```
+>
+> Or log in interactively:
+>
+> ```bash
+> gh auth login
+> ```
+
 ### Copilot Authentication for GitHub Agentic Workflows
 
 Agentic workflows using the Copilot engine must authenticate Copilot inference. Choose one of these methods:
