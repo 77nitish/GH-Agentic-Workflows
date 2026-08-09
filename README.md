@@ -4,8 +4,7 @@
 > Instead, create your own repository from the template. See
 > [how to create a repository from a template](#1-create-your-workshop-repository).
 
-> [!WARNING]
-
+> [!NOTE]
 > After creating your repository, wait 20–30 seconds for the
 > **configure-codespaces** workflow to complete before continuing.
 > This is required for the GitHub Codespace you'll create in the next step. The
@@ -119,7 +118,9 @@ run in projects built with any language, framework, or runtime.
 Run the following commands in the Codespace terminal:
 
 ```bash
+# Install the 'gh aw' extension
 gh extension install github/gh-aw
+# check version
 gh aw version
 ```
 
@@ -158,7 +159,9 @@ Initialize Agentic Workflows, then commit the generated repository
 configuration:
 
 ```bash
+# initialize to build the gh-aw custom agent and the skill
 gh aw init --engine copilot
+# all the magic will happen in remote repo
 git add .
 git commit -m "initialize GitHub Agentic Workflows"
 git push origin main
@@ -182,9 +185,6 @@ git pull --ff-only origin main
 > [!TIP]
 > If **Agentic Workflows Agent** does not appear in Copilot Chat, open the
 > Command Palette and run **Developer: Reload Window**.
-
-
-
 
 
 
@@ -258,10 +258,7 @@ Install the
 [Code Simplifier](https://github.com/githubnext/agentics/blob/main/docs/code-simplifier.md) automatically analyze recently modified code and create pull requests with simplifications that improve clarity and maintainability
 
 ```bash
-# Install the 'gh aw' extension
-gh extension install github/gh-aw
-
-# Add the workflow to your repository
+# Add the prebuilt workflow to your repository
 gh aw add-wizard githubnext/agentics/code-simplifier
 ```
 
@@ -534,5 +531,19 @@ and add one of these comments:
 - [Safe outputs](https://github.github.com/gh-aw/reference/safe-outputs/)
 
 ## Appendix
+
+### How to Check the Initial Workflow Status
+
+After creating your repository from the template:
+
+1. Open the repository's **Actions** tab.
+2. Find the **configure-codespaces** run named **Initial commit**.
+3. Wait for the run to display a green check mark before creating your
+   Codespace. After a successful run, **configure-codespaces** appears as
+   **Disabled** because it is a one-time setup workflow.
+
+<p align="center">
+   <img src="images/initial-boot-fordevcontainer.jpg" width="100%" alt="GitHub Actions page showing the successful initial configure-codespaces workflow run">
+</p>
 
 For personal-repository setup instructions, see the [Appendix](appendix.md).
