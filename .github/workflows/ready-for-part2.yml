@@ -33,6 +33,8 @@ jobs:
           set -euo pipefail
 
           if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            bootstrap_subject="configure Codespaces permissions"
+            bootstrap_author_email="41898282+github-actions[bot]@users.noreply.github.com"
             mapfile -t head_parents < <(git cat-file -p HEAD | sed -n 's/^parent //p')
 
             if (( ${#head_parents[@]} != 1 )); then
@@ -40,12 +42,21 @@ jobs:
               exit 0
             fi
 
+            head_subject="$(git show -s --format=%s HEAD)"
+            head_author_email="$(git show -s --format=%ae HEAD)"
+
+            if [[ "$head_subject" == "$bootstrap_subject" ]] &&
+               [[ "$head_author_email" == "$bootstrap_author_email" ]]; then
+              echo "Skipping: the pushed commit is the Codespaces bootstrap commit."
+              exit 0
+            fi
+
             root_candidate="${head_parents[0]}"
             parent_subject="$(git show -s --format=%s "$root_candidate")"
             parent_author_email="$(git show -s --format=%ae "$root_candidate")"
 
-            if [[ "$parent_subject" == "configure Codespaces permissions" ]] &&
-               [[ "$parent_author_email" == "41898282+github-actions[bot]@users.noreply.github.com" ]]; then
+            if [[ "$parent_subject" == "$bootstrap_subject" ]] &&
+               [[ "$parent_author_email" == "$bootstrap_author_email" ]]; then
               mapfile -t bootstrap_parents < <(git cat-file -p "$root_candidate" | sed -n 's/^parent //p')
 
               if (( ${#bootstrap_parents[@]} != 1 )); then
@@ -66,7 +77,7 @@ jobs:
 
           archive_file="completed-sections1-2-3.md"
           section_heading="## 4. A custom agentic workflow - Weekly Activity Report"
-          agenda_heading="## What Are We Going to Automate Today?"
+          agenda_heading="## AGENDA : What Are We Going to Automate Today?"
           completion_heading="# 🎉 CONGRATULATIONS FOR MAKING IT THIS FAR!!! 🚀🥳"
 
           extract_agenda_block() {

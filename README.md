@@ -4,10 +4,10 @@
 > Instead, create your own repository from the template. See
 > [how to create a repository from a template](#1-create-your-workshop-repository).
 
-> [!CAUTION] After creating your repository, wait 20–30 seconds for the
-> **configure-codespaces** workflow to complete before continuing.
-
 > [!WARNING]
+
+> After creating your repository, wait 20–30 seconds for the
+> **configure-codespaces** workflow to complete before continuing.
 > This is required for the GitHub Codespace you'll create in the next step. The
 > workflow updates `devcontainer.json` with the permissions required for this
 > workshop.
