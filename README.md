@@ -1,3 +1,19 @@
+> [!IMPORTANT]
+> **For the exercise, do not fork or clone this template repository.**
+>
+> Instead, create your own repository from the template. See
+> [how to create a repository from a template](#1-create-your-workshop-repository).
+
+> [!CAUTION] After creating your repository, wait 20–30 seconds for the
+> **configure-codespaces** workflow to complete before continuing.
+
+> [!WARNING]
+> This is required for the GitHub Codespace you'll create in the next step. The
+> workflow updates `devcontainer.json` with the permissions required for this
+> workshop.
+
+
+
 # GitHub Agentic Workflows Workshop
 
 Build and run secure, AI-powered automations with GitHub Agentic Workflows
@@ -5,7 +21,7 @@ Build and run secure, AI-powered automations with GitHub Agentic Workflows
 pre-built workflows, and review their results in issues, pull requests, and
 review comments.
 
-## What Are We Going to Automate Today?
+## AGENDA : What Are We Going to Automate Today?
 
 | # | Part | Outcome |
 | :--: | --- | --- |
@@ -13,7 +29,7 @@ review comments.
 | 2 | [Open the Repository in GitHub Codespaces](#2-open-the-repository-in-github-codespaces) | Configure and explore the development environment |
 | 3 | [Install and Initialize `gh-aw`](#3-install-and-initialize-gh-aw) | Prepare the repository for Agentic Workflows |
 | 4 | [Weekly Activity Report Workflow](#4-a-custom-agentic-workflow---weekly-activity-report) | Create a custom workflow that publishes a weekly report issue |
-| 5 | [Code-Simplifier from GH Agentics](#5-install-prebaked-repository-quality-improver-from-gh-agentics) | Install a pre-built workflow that publishes daily status issues |
+| 5 | [Code-Simplifier from GH Agentics](#5-install-prebaked-code-simplifier-from-gh-agentics) | Install a pre-built workflow that publishes daily status issues |
 | 6 | [Create a Daily App Update Workflow](#6-create-a-daily-app-update-workflow) | Create a custom workflow that updates the web app |
 | 7 | [Optional: Create a Daily FAQ Workflow](#7-optional-create-a-daily-faq-workflow) | Create a custom workflow that fetches and adds FAQ content |
 | 8 | [Optional: Add the Grumpy Reviewer](#8-optional-add-the-grumpy-reviewer) | Install a pre-built workflow that reviews pull requests |
@@ -21,8 +37,9 @@ review comments.
 
 ## 1. Create Your Workshop Repository
 
-Do not fork or clone this repository. Create a repository from the template so
-your work is isolated from other students.
+> [!IMPORTANT] 
+> Do not fork or clone this repository. Create a repository 
+> from the template so your work is isolated from other students.
 
 1. Select **Use this template**, then **Create a new repository**.
 
@@ -30,7 +47,7 @@ your work is isolated from other students.
       <img src="images/create-from-template-repo.png" width="85%" alt="GitHub repository page with the Use this template menu highlighted">
    </p>
 
-2. For **Owner**, select the organization provided by your instructor. Enter a
+2. For **Owner**, select the organization provided by your instructor or use your personal repository. Enter a
    unique repository name, keep the default branch as `main`, and select
    **Create repository**.
 
@@ -46,10 +63,12 @@ your work is isolated from other students.
    Select **Save** if you changed either setting. If an organization policy
    prevents a change, contact your instructor.
 
-> [!IMPORTANT]
+> ⚠️ 
+> [!CAUTION]
 > This workshop uses your organization's **Copilot requests** billing. For
-> personal accounts that require a Personal Access Token (PAT), see the
-> [Appendix](appendix.md).
+> Personal Access Token (PAT), see the [Appendix](appendix.md). If you proceed
+> with PAT, never paste a real token into a comment, Markdown file, pull request,
+> or Copilot Chat message. Only add it through the repository secrets UI.
 
 ## 2. Open the Repository in GitHub Codespaces
 
@@ -108,7 +127,8 @@ gh aw version
 > If `gh-aw` is already installed, replace the first command with
 > `gh extension upgrade gh-aw`.
 
-
+ 
+<!-- # OPTIONAL INCASE DEVCONTAINER FAILS - TROUBLESHOOTING  
 ```bash 
 unset GH_TOKEN GITHUB_TOKEN
 gh auth login --web --scopes repo,workflow
@@ -131,6 +151,8 @@ During `gh auth login`:
 > The `unset` command makes GitHub CLI use your browser-authenticated session
 > instead of the restricted token injected by Codespaces. In every new
 > terminal, run this command again before using `gh` or `gh aw`.
+
+# OPTIONAL INCASE DEVCONTAINER FAILS - TROUBLESHOOTING   -->
 
 Initialize Agentic Workflows, then commit the generated repository
 configuration:

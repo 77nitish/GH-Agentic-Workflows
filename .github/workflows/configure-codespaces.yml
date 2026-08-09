@@ -1,0 +1,144 @@
+name: configure-codespaces
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+
+concurrency:
+  group: configure-codespaces-${{ github.repository_id }}
+  cancel-in-progress: false
+
+jobs:
+  configure:
+    if: ${{ !github.event.repository.is_template }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out the default branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Configure Codespaces permissions
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          source_file="sampledevcontainer.json"
+          target_file=".devcontainer/devcontainer.json"
+          placeholder="STUDENT_OWNER/STUDENT_REPOSITORY"
+
+          validate_target() {
+            jq --exit-status \
+              --arg repository "$GITHUB_REPOSITORY" \
+              --arg placeholder "$placeholder" \
+              '
+                .customizations.codespaces.repositories
+                  | type == "object"
+                    and length == 1
+                    and has($repository)
+                    and (has($placeholder) | not)
+                    and .[$repository].permissions.actions == "write"
+                    and .[$repository].permissions.checks == "write"
+                    and .[$repository].permissions.contents == "write"
+                    and .[$repository].permissions.discussions == "write"
+                    and .[$repository].permissions.issues == "write"
+                    and .[$repository].permissions.pull_requests == "write"
+                    and .[$repository].permissions.workflows == "write"
+              ' \
+              "$target_file" > /dev/null
+          }
+
+          if [[ -f "$source_file" ]]; then
+            if ! jq --exit-status \
+              --arg placeholder "$placeholder" \
+              '
+                .customizations.codespaces.repositories
+                  | type == "object"
+                    and length == 1
+                    and has($placeholder)
+              ' \
+              "$source_file" > /dev/null; then
+              echo "::error::$source_file does not contain the expected repository placeholder."
+              exit 1
+            fi
+
+            rendered_file="$(mktemp)"
+            trap 'rm -f "$rendered_file"' EXIT
+
+            jq \
+              --arg repository "$GITHUB_REPOSITORY" \
+              --arg placeholder "$placeholder" \
+              '
+                .customizations.codespaces.repositories as $repositories
+                  | .customizations.codespaces.repositories = {
+                      ($repository): $repositories[$placeholder]
+                    }
+              ' \
+              "$source_file" > "$rendered_file"
+
+            mkdir -p "$(dirname "$target_file")"
+            mv "$rendered_file" "$target_file"
+            rm "$source_file"
+            trap - EXIT
+          elif [[ ! -f "$target_file" ]]; then
+            echo "::error::Neither $source_file nor $target_file exists."
+            exit 1
+          fi
+
+          if ! validate_target; then
+            echo "::error::$target_file does not contain the expected Codespaces permissions for $GITHUB_REPOSITORY."
+            exit 1
+          fi
+
+      - name: Commit configuration
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          git add -- .devcontainer/devcontainer.json
+
+          if git ls-files --error-unmatch sampledevcontainer.json > /dev/null 2>&1; then
+            git add --all -- sampledevcontainer.json
+          fi
+
+          if git diff --cached --quiet; then
+            echo "Codespaces permissions are already configured."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "configure Codespaces permissions"
+
+          for attempt in 1 2 3; do
+            git pull --rebase origin "$DEFAULT_BRANCH"
+
+            if git push origin "HEAD:${DEFAULT_BRANCH}"; then
+              exit 0
+            fi
+
+            echo "::warning::Push attempt $attempt failed; retrying after synchronizing with $DEFAULT_BRANCH."
+          done
+
+          echo "::error::Could not push the Codespaces configuration after three attempts."
+          exit 1
+
+      - name: Disable bootstrap workflow
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/configure-codespaces.yml/disable"

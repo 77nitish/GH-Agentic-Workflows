@@ -22,7 +22,7 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 2
+          fetch-depth: 3
           ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.sha }}
 
       - name: Archive sections and commit transition
@@ -40,7 +40,23 @@ jobs:
               exit 0
             fi
 
-            mapfile -t template_parents < <(git cat-file -p "${head_parents[0]}" | sed -n 's/^parent //p')
+            root_candidate="${head_parents[0]}"
+            parent_subject="$(git show -s --format=%s "$root_candidate")"
+            parent_author_email="$(git show -s --format=%ae "$root_candidate")"
+
+            if [[ "$parent_subject" == "configure Codespaces permissions" ]] &&
+               [[ "$parent_author_email" == "41898282+github-actions[bot]@users.noreply.github.com" ]]; then
+              mapfile -t bootstrap_parents < <(git cat-file -p "$root_candidate" | sed -n 's/^parent //p')
+
+              if (( ${#bootstrap_parents[@]} != 1 )); then
+                echo "Skipping: the Codespaces bootstrap commit does not follow the template root."
+                exit 0
+              fi
+
+              root_candidate="${bootstrap_parents[0]}"
+            fi
+
+            mapfile -t template_parents < <(git cat-file -p "$root_candidate" | sed -n 's/^parent //p')
 
             if (( ${#template_parents[@]} != 0 )); then
               echo "Skipping: the pushed commit is not the first commit after the template root."
@@ -219,7 +235,24 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -m "advance workshop to section 4"
-            git push origin HEAD:main
+
+            push_succeeded=false
+
+            for attempt in 1 2 3; do
+              git pull --rebase origin main
+
+              if git push origin HEAD:main; then
+                push_succeeded=true
+                break
+              fi
+
+              echo "::warning::Push attempt $attempt failed; retrying after synchronizing with main."
+            done
+
+            if [[ "$push_succeeded" != "true" ]]; then
+              echo "::error::Could not push the workshop transition after three attempts."
+              exit 1
+            fi
           fi
 
           echo "Disabling ready-for-part2 after the successful transition."
